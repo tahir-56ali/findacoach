@@ -19,7 +19,12 @@
           >
         </div>
         <base-spinner v-if="isLoading"></base-spinner>
-        <coach-item></coach-item>
+        <section v-if="hasCoaches">
+          <coach-item
+            v-for="coach in filteredCoaches"
+            :key="coach.id"
+          ></coach-item>
+        </section>
       </base-card>
     </section>
   </div>
@@ -49,6 +54,15 @@ export default {
     },
     filterCoaches(filters) {
       console.log(filters);
+    },
+  },
+  computed: {
+    filteredCoaches() {
+      console.log(this.$store.getters["coaches/coaches"]);
+      return this.$store.getters["coaches/coaches"];
+    },
+    hasCoaches() {
+      return this.$store.getters["coaches/hasCoaches"];
     },
   },
 };
