@@ -20,10 +20,17 @@
         </div>
         <base-spinner v-if="isLoading"></base-spinner>
         <section v-if="hasCoaches">
-          <coach-item
-            v-for="coach in filteredCoaches"
-            :key="coach.id"
-          ></coach-item>
+          <ul>
+            <coach-item
+              v-for="coach in filteredCoaches"
+              :key="coach.id"
+              :id="coach.id"
+              :firstname="coach.firstName"
+              :lastname="coach.lastName"
+              :rate="coach.hourlyRate"
+              :areas="coach.areas"
+            ></coach-item>
+          </ul>
         </section>
       </base-card>
     </section>
@@ -43,6 +50,11 @@ export default {
     return {
       error: null,
       isLoading: false,
+      filters: {
+        frontend: true,
+        backend: true,
+        career: true,
+      },
     };
   },
   methods: {
@@ -53,13 +65,27 @@ export default {
       console.log(refresh);
     },
     filterCoaches(filters) {
-      console.log(filters);
+      this.filters = filters;
     },
   },
   computed: {
     filteredCoaches() {
-      console.log(this.$store.getters["coaches/coaches"]);
-      return this.$store.getters["coaches/coaches"];
+      const coaches = this.$store.getters["coaches/coaches"];
+
+      const filteredCoaches = coaches.filter((coach) => {
+        if (this.filters.frontend && coach.areas.includes("frontend")) {
+          return true;
+        }
+        if (this.filters.backend && coach.areas.includes("backend")) {
+          return true;
+        }
+        if (this.filters.career && coach.areas.includes("career")) {
+          return true;
+        }
+        return false;
+      });
+
+      return filteredCoaches;
     },
     hasCoaches() {
       return this.$store.getters["coaches/hasCoaches"];
