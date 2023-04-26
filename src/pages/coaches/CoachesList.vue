@@ -4,9 +4,10 @@
       :show="!!error"
       @close="handleError"
       title="Something went wrong"
-    ></base-dialog>
+      >{{ error }}</base-dialog
+    >
     <section>
-      <coach-filter @filter-coaches="filterCoaches"></coach-filter>
+      <coach-filter @filter-coaches="setActiveFilters"></coach-filter>
     </section>
     <section>
       <base-card>
@@ -19,7 +20,7 @@
           >
         </div>
         <base-spinner v-if="isLoading"></base-spinner>
-        <section v-if="hasCoaches">
+        <section v-if="!isLoading && hasCoaches">
           <ul>
             <coach-item
               v-for="coach in filteredCoaches"
@@ -50,22 +51,33 @@ export default {
     return {
       error: null,
       isLoading: false,
-      filters: {
+      activeFilters: {
         frontend: true,
         backend: true,
         career: true,
       },
     };
   },
+  created() {
+    this.loadCoaches();
+  },
   methods: {
     handleError() {
       this.error = null;
     },
-    loadCoaches(refresh = false) {
-      console.log(refresh);
+    async loadCoaches(refresh = false) {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch("coaches/loadCoaches", {
+          forceRefresh: refresh,
+        });
+      } catch (error) {
+        this.error = error || "Something went wrong";
+      }
+      this.isLoading = false;
     },
-    filterCoaches(filters) {
-      this.filters = filters;
+    setActiveFilters(updatedFilters) {
+      this.activeFilters = updatedFilters;
     },
   },
   computed: {
@@ -73,13 +85,13 @@ export default {
       const coaches = this.$store.getters["coaches/coaches"];
 
       const filteredCoaches = coaches.filter((coach) => {
-        if (this.filters.frontend && coach.areas.includes("frontend")) {
+        if (this.activeFilters.frontend && coach.areas.includes("frontend")) {
           return true;
         }
-        if (this.filters.backend && coach.areas.includes("backend")) {
+        if (this.activeFilters.backend && coach.areas.includes("backend")) {
           return true;
         }
-        if (this.filters.career && coach.areas.includes("career")) {
+        if (this.activeFilters.career && coach.areas.includes("career")) {
           return true;
         }
         return false;
