@@ -8,6 +8,8 @@ import RegisterCoach from "./pages/coaches/RegisterCoach.vue";
 import UserAuth from "./pages/auth/UserAuth.vue";
 import NotFound from "./pages/NotFound.vue";
 
+import store from "./store/index.js";
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -36,6 +38,23 @@ const router = createRouter({
     },
     { path: "/:NotFound(.*)", component: NotFound },
   ],
+  scrollBehavior(_, _2, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { left: 0, top: 0 };
+  },
+});
+
+// Using Global Navigation Guard
+router.beforeEach(function (to, from, next) {
+  if (to.meta.requireAuth && !store.getters.isAuthenticated) {
+    next("/auth");
+  } else if (to.meta.requireUnauth && store.getters.isAuthenticated) {
+    next("/coaches");
+  } else {
+    next();
+  }
 });
 
 export default router;
