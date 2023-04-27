@@ -1,3 +1,5 @@
+let timer;
+
 export default {
   async authenticate(context, payload) {
     const formData = {
@@ -26,14 +28,19 @@ export default {
     }
 
     // calculate expireIn
-    const expireIn = responseData.expireIn * 1000;
-    //const expireIn = 5000; // for testing purpose setting expireIn for 5 seconds
+    //const expireIn = responseData.expireIn * 1000;
+    const expireIn = 5000; // for testing purpose setting expireIn for 5 seconds
     const tokenExpiration = new Date().getTime() + expireIn;
 
     // set local storage variables for Auto Login functionality on page refresh
     localStorage.setItem("token", responseData.idToken);
     localStorage.setItem("userId", responseData.localId);
     localStorage.setItem("tokenExpiration", tokenExpiration);
+
+    // for autologout register timer
+    timer = setTimeout(function () {
+      context.dispatch("autoLogout");
+    }, expireIn);
 
     context.commit("setUser", {
       userId: responseData.localId,
@@ -45,9 +52,15 @@ export default {
     localStorage.removeItem("userId");
     localStorage.removeItem("tokenExpiration");
 
+    clearTimeout(timer);
+
     context.commit("setUser", {
       userId: null,
       token: "",
     });
+  },
+  autoLogout(context) {
+    context.dispatch("logout");
+    context.commit("setAutoLogout");
   },
 };
