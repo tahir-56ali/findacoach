@@ -2,11 +2,6 @@ let timer;
 
 export default {
   async authenticate(context, payload) {
-    const formData = {
-      email: payload.email,
-      password: payload.password,
-    };
-
     let url =
       "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC_Ktnzmt5QSbnIi8pg_-dn8aGZeG0mzx8";
 
@@ -17,7 +12,11 @@ export default {
 
     const response = await fetch(url, {
       method: "POST",
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        email: payload.email,
+        password: payload.password,
+        returnSecureToken: true,
+      }),
     });
 
     const responseData = await response.json();
@@ -27,10 +26,10 @@ export default {
       throw error;
     }
 
-    // calculate expireIn
-    //const expireIn = responseData.expireIn * 1000;
-    const expireIn = 5000; // for testing purpose setting expireIn for 5 seconds
-    const tokenExpiration = new Date().getTime() + expireIn;
+    // calculate expiresIn
+    const expiresIn = responseData.expiresIn * 1000;
+    //const expiresIn = 5000; // for testing purpose setting expiresIn for 5 seconds
+    const tokenExpiration = new Date().getTime() + expiresIn;
 
     // set local storage variables for Auto Login functionality on page refresh
     localStorage.setItem("token", responseData.idToken);
@@ -40,7 +39,7 @@ export default {
     // for autologout register timer
     timer = setTimeout(function () {
       context.dispatch("autoLogout");
-    }, expireIn);
+    }, expiresIn);
 
     context.commit("setUser", {
       userId: responseData.localId,
@@ -62,5 +61,25 @@ export default {
   autoLogout(context) {
     context.dispatch("logout");
     context.commit("setAutoLogout");
+  },
+  tryLogin(context) {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+    const expiresIn = +tokenExpiration - new Date().getTime();
+    if (expiresIn < 0) {
+      return;
+    }
+
+    // renew timer
+    timer = setTimeout(function () {
+      context.dispatch("autoLogout");
+    }, expiresIn);
+
+    context.commit("setUser", {
+      token: token,
+      userId: userId,
+    });
   },
 };
