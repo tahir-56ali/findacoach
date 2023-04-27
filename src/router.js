@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import CoachesList from "./pages/coaches/CoachesList.vue";
 import CoachDetail from "./pages/coaches/CoachDetail.vue";
 import ContactCoach from "./pages/requests/ContactCoach.vue";
-import ReceivedRequests from "./pages/requests/ReceivedRequests.vue";
+import RequestsReceived from "./pages/requests/RequestsReceived.vue";
 import RegisterCoach from "./pages/coaches/RegisterCoach.vue";
 import UserAuth from "./pages/auth/UserAuth.vue";
 import NotFound from "./pages/NotFound.vue";
@@ -23,7 +23,7 @@ const router = createRouter({
     },
     {
       path: "/requests",
-      component: ReceivedRequests,
+      component: RequestsReceived,
       meta: { requireAuth: true },
     },
     {
