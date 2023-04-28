@@ -18,6 +18,7 @@
 - route transition applied on page load
 - used Async components to optimize less used components by loading as needed
 - used firebase as database to store and fetch coaches / requests
+- used firebase authentication for signup and login functionality
 - deployed project "build" on firebase link: https://vue-http-demo-cf0db.web.app
 
 ## Project setup
