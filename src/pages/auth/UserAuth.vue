@@ -82,7 +82,8 @@ export default {
       }
       this.isLoading = false;
 
-      this.$router.replace("/coaches");
+      const redirect = "/" + (this.$route.query.redirect || "coaches");
+      this.$router.replace(redirect);
     },
     changeMode() {
       this.mode = this.mode === "login" ? "signup" : "login";

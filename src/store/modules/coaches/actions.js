@@ -33,4 +33,30 @@ export default {
     context.commit("setCoaches", coaches);
     context.commit("setFetchTimestamp");
   },
+  async registerCoach(context, payload) {
+    const userId = context.rootGetters.userId;
+    const token = context.rootGetters.token;
+
+    const response = await fetch(
+      `https://vue-http-demo-cf0db-default-rtdb.firebaseio.com/coaches/${userId}.json?auth=${token}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      const error = new Error(
+        responseData.message || "Unable to register coach"
+      );
+      throw error;
+    }
+
+    context.commit("addCoach", {
+      ...payload,
+      id: responseData.name,
+    });
+  },
 };

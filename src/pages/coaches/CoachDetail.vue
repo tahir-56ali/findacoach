@@ -43,8 +43,9 @@ export default {
   methods: {
     loadSelectedCoach() {
       const coachId = this.$route.params.id;
-      const coaches = this.$store.getters["coaches/coaches"];
-      this.selectedCoach = coaches.find((coach) => coach.id === coachId);
+      this.selectedCoach = this.$store.getters["coaches/coaches"].find(
+        (coach) => coach.id === coachId
+      );
     },
   },
   computed: {
