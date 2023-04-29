@@ -9,8 +9,10 @@
     <header>
       <h2>Requests Received</h2>
     </header>
-    <base-spinner v-if="isLoading"></base-spinner>
-    <ul v-else-if="!isLoading && hasRequests">
+    <div v-if="isLoading">
+      <base-spinner></base-spinner>
+    </div>
+    <ul v-else-if="hasRequests">
       <RequestItem
         v-for="request in requestsReceived"
         :key="request.id"
@@ -49,7 +51,7 @@ export default {
       try {
         await this.$store.dispatch("requests/fetchRequests");
       } catch (error) {
-        this.error = error;
+        this.error = error.message || "Something went wrong";
       }
       this.isLoading = false;
     },

@@ -60,30 +60,29 @@ export default {
       if (
         this.email === "" ||
         !this.email.includes("@") ||
-        this.password === ""
+        this.password.length < 6
       ) {
         this.formIsValid = false;
         return;
       }
 
+      this.isLoading = true;
       const formData = {
         email: this.email,
         password: this.password,
         mode: this.mode,
       };
 
-      this.isLoading = true;
       try {
         await this.$store.dispatch("authenticate", formData);
-      } catch (error) {
-        this.error = error;
-        this.isLoading = false;
-        return;
-      }
-      this.isLoading = false;
 
-      const redirect = "/" + (this.$route.query.redirect || "coaches");
-      this.$router.replace(redirect);
+        const redirect = "/" + (this.$route.query.redirect || "coaches");
+        this.$router.replace(redirect);
+      } catch (error) {
+        this.error = error.message || "Failed to authenticate, try later.";
+      }
+
+      this.isLoading = false;
     },
     changeMode() {
       this.mode = this.mode === "login" ? "signup" : "login";

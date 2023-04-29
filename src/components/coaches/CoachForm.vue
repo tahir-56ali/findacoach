@@ -81,6 +81,7 @@
 
 <script>
 export default {
+  emits: ["register-coach"],
   data() {
     return {
       firstname: {
@@ -137,7 +138,7 @@ export default {
     submitForm() {
       this.validateForm();
       if (!this.formIsValid) {
-        return false;
+        return;
       }
 
       const formData = {

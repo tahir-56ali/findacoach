@@ -55,12 +55,10 @@ export default {
 
       try {
         await this.$store.dispatch("requests/contactCoach", request);
+        this.$router.replace("/requests");
       } catch (error) {
-        this.error = error;
-        return;
+        this.error = error.message || "Something went wrong";
       }
-
-      this.$router.replace("/requests");
     },
     handleError() {
       this.error = null;

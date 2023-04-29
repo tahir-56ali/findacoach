@@ -39,15 +39,24 @@ const router = createRouter({
     { path: "/:NotFound(.*)", component: NotFound },
   ],
   scrollBehavior(_, _2, savedPosition) {
+    let position = { x: 0, y: 0 };
+    // Keep scroll position when using browser buttons
     if (savedPosition) {
-      return savedPosition;
+      position = savedPosition;
     }
-    return { left: 0, top: 0 };
+
+    // Workaround for transitions scrolling to the top of the page
+    // However, there are still some problems being fixed by the vue team
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(position);
+      }, 500);
+    });
   },
 });
 
 // Using Global Navigation Guard
-router.beforeEach(function (to, from, next) {
+router.beforeEach(function (to, _, next) {
   if (to.meta.requireAuth && !store.getters.isAuthenticated) {
     next("/auth");
   } else if (to.meta.requireUnauth && store.getters.isAuthenticated) {

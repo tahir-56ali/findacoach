@@ -18,12 +18,17 @@
           <base-button v-if="!isLoggedIn" link to="/auth?redirect=register"
             >Login to Register as Coach</base-button
           >
-          <base-button v-if="isLoggedIn && !isCoach" link to="/register"
+          <base-button
+            v-if="isLoggedIn && !isCoach && !isLoading"
+            link
+            to="/register"
             >Register as Coach</base-button
           >
         </div>
-        <base-spinner v-if="isLoading"></base-spinner>
-        <section v-if="!isLoading && hasCoaches">
+        <div v-if="isLoading">
+          <base-spinner></base-spinner>
+        </div>
+        <section v-else-if="hasCoaches">
           <ul>
             <coach-item
               v-for="coach in filteredCoaches"
@@ -36,6 +41,7 @@
             ></coach-item>
           </ul>
         </section>
+        <h3 v-else>No coaches found.</h3>
       </base-card>
     </section>
   </div>

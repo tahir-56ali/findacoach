@@ -35,7 +35,7 @@ export default {
       try {
         await this.$store.dispatch("coaches/registerCoach", formData);
       } catch (error) {
-        this.error = error;
+        this.error = error.message || "Something went wrong!";
         return;
       }
 
