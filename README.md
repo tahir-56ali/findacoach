@@ -1,4 +1,4 @@
-# findacoach
+# Find A Coach App
 
 ## App Pages
 
